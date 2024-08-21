@@ -1,7 +1,11 @@
-import logo from './logo.svg';
 import './App.css';
 import React, { useState, useEffect} from 'react';
-import { Container, TextField, Button, List, ListItem, Checkbox } from '@mui/material';
+import { Container, TextField, Button, List, ListItem, Checkbox, Typography } from '@mui/material';
+import { Authenticator } from '@aws-amplify/ui-react';
+import { Amplify } from 'aws-amplify';
+import awsconfig from './aws-exports'; 
+
+Amplify.configure(awsconfig);
 
 function App() {
     const [items, setItems] = useState([]); 
@@ -29,9 +33,22 @@ function App() {
       localStorage.setItem('buckeListItems', JSON.stringify(updatedItems));
     };
 
+    const handlingSignOut = () => {
+        Amplify.Auth.signOut()
+          .then(() => {
+            console.log('Signed out successfully');
+          })
+          .catch (err => console.log('Error signing out: ', err));
+    };
+
   return (
-    <Container>
-      <h1>My Bucket List</h1>
+    <Authenticator>
+      <Container>
+        <Button variant="outlined" color="secondary" onClick={handlingSignOut}>
+          handlingSignOut
+        </Button>
+      <Typography variant="h1">My Bucket List </Typography>
+    
       <TextField
         label = "New Item"
         value={newItem}
@@ -39,7 +56,7 @@ function App() {
       />
 
       <Button variant="contained" color='primary' onClick={addItem}>
-        addItem
+        Add Item
       </Button>
 
       <List>
@@ -50,30 +67,11 @@ function App() {
               onChange={() => toggleComplete(index)}
               />
               {item.text}
-          </ListItem>
-        ))}
-      </List>
+            </ListItem>
+          ))}
+        </List>
       </Container>
+    </Authenticator>
     );
   }
-
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.js</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>
-//   );
-// }
-
 export default App;
